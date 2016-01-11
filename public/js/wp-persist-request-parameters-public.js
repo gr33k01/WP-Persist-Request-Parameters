@@ -37,7 +37,7 @@
 
 		if ( (!cookieExists  && parameterExists) || staleCookieExists ) {
 			console.log('Setting cookie with key ['  + valuesToPersist[i] + '] to: [' +  getParameterByName(valuesToPersist[i]) + ']...');
-			Cookies.set( valuesToPersist[i], getParameterByName(valuesToPersist[i]) );
+			Cookies.set( valuesToPersist[i], getParameterByName(valuesToPersist[i]), { expires: 7 } );
 			console.log('Cookie with key ['  + valuesToPersist[i] + '] now has value: [' + Cookies.get(valuesToPersist[i]) + '].');
 		}
 	}
