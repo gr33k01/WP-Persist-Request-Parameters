@@ -3,6 +3,13 @@
  * included in this file.
  */
 
-  #wp_prp_parameters_to_track {
- 	width: 30%
+ #wp_prp_parameters_to_track {
+ 	width: 100%;
+ 	max-width: 430px;
  }
+
+ em.description {
+    display: block;
+    max-width: 430px;
+    margin-top: 13px;
+}

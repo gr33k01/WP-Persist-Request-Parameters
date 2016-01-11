@@ -161,6 +161,20 @@ class Wp_Persist_Request_Parameters_Admin {
 
 		// Registers the 'Parameters to track' field
 		register_setting( $this->plugin_name, $this->option_prefix . '_parameters_to_track', array( $this, $this->option_prefix . '_sanitize_parameters_to_track' ) );
+
+
+		// Adds 'Save to Gravity Forms hidden fields' field in General secion
+		add_settings_field(
+			$this->option_prefix . '_save_to_gf_hidden_fields',
+			__( 'Save to Gravity Forms', 'wp-prp' ),
+			array( $this, $this->option_prefix . '_save_to_gf_hidden_fields_cb' ),
+			$this->plugin_name,
+			$this->option_prefix . '_general',
+			array( 'label_for' => $this->option_prefix . '_save_to_gf_hidden_fields' )
+			);
+
+		// Registers the 'Parameters to track' field
+		register_setting( $this->plugin_name, $this->option_prefix . '_save_to_gf_hidden_fields', array( $this, $this->option_prefix . '_save_to_gf_hidden_fields' ) );
 	}
 
 	/**
@@ -182,7 +196,7 @@ class Wp_Persist_Request_Parameters_Admin {
 		$value = get_option($f_id);
 	?>
 		<input type="text" name="<?php echo $f_id; ?>" id="<?php echo $f_id; ?>"  value="<?php echo $value; ?>"/>
-		<br /><em>A comma-seperated list of URL parameters to track with cookies.</em>
+		<em class="description">A comma-seperated list of URL parameters to track with cookies.</em>
 	<?php
 	}
 
@@ -192,6 +206,30 @@ class Wp_Persist_Request_Parameters_Admin {
 	 * @since  1.0.0
 	 */
 	public function wp_prp_sanitize_parameters_to_track( $value ) {
+		return $value;
+	}
+
+	/**
+	 * Render the markup for the Save to Gravity Forms hidden fields field
+	 *
+	 * @since  1.0.0
+	 */
+	public function wp_prp_save_to_gf_hidden_fields_cb() {
+		$f_id = $this->option_prefix . '_save_to_gf_hidden_fields';
+		$values = get_option($f_id);
+		// var_dump($value); exit();
+	?>
+		<input type="checkbox" name="<?php echo $f_id; ?>[save_to_gf]" id="save_to_gf"  value="1" <?php echo checked(1, $values, false) ?> />
+		<em class="description">When this option is enabled, a Gravity Forms hook will attempt save each the above parameters to a hidden field with a matching label. <strong>Note: this will only work with hidden fields.</strong></em>
+	<?php
+	}
+
+	/**
+	 * Placeholder for Save to Gravity Forms hidden fields sanitize
+	 *
+	 * @since  1.0.0
+	 */
+	public function wp_prp_sanitize_save_to_gf_hidden_fields( $value ) {
 		return $value;
 	}
 

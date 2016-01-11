@@ -41,6 +41,25 @@ class Wp_Persist_Request_Parameters_Public {
 	private $version;
 
 	/**
+	 * Array of request parameters to persist
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      array    $parameters_to_persist    Array of request parameters to persist
+	 */
+	private $parameters_to_persist;
+
+	/**
+	 * Flag for option to save to Gravity Forms
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      bool    $save_to_gravity_forms    Flag for option to save to Gravity Forms.
+	 */
+	private $save_to_gravity_forms;
+
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -50,8 +69,12 @@ class Wp_Persist_Request_Parameters_Public {
 	public function __construct( $plugin_name, $version ) {
 
 		$this->plugin_name = $plugin_name;
+
 		$this->version = $version;
 
+		$this->parameters_to_persist = $this->get_request_parameters_array();
+
+		$this->save_to_gravity_forms = true;
 	}
 
 	/**
@@ -101,8 +124,61 @@ class Wp_Persist_Request_Parameters_Public {
 		wp_register_script( 'js-cookie', plugin_dir_url( __FILE__ ) . '/../../bower_components/js-cookie/src/js.cookie.js', array(), $this->version, false );
 		
 		$this->localize_script();
+		wp_enqueue_script( $this->plugin_name );
+	}
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-persist-request-parameters-public.js', array( 'jquery', 'js-cookie' ), $this->version, false );
+	/**
+	 * Pre submission Gravity Froms hook
+	 *
+	 * @since    1.0.0
+	 */
+	public function pre_submission( $form ) {
+
+		if ( ! $this->save_to_gravity_forms ) return;
+
+		foreach( $this->parameters_to_persist as $param ) {
+			$this->save_to_hidden_field( $param, $form );
+		}
+	}
+
+	/**
+	 * Save cookie value to hidden input with matching label
+	 *
+	 * @since    1.0.0
+	 */
+	private function save_to_hidden_field( $param, $form ) {
+		$input_id = $this->get_input_id_from_label( $param, $form);
+		if(isset($_COOKIE[$param]) && isset($input_id)) {
+			$_POST[$input_id] = $_COOKIE[$param];	
+		}
+	}
+
+	/**
+	 * Get Gravity Forms input ID from label
+	 *
+	 * @since    1.0.0
+	 */
+	private function get_input_id_from_label( $label, $form )
+	{
+	    foreach( $form['fields'] as $field)
+	    {
+	    	var_dump($field); exit();
+	    	
+	        if ( strtolower($field->label) === strtolower($label) ) {
+	            return 'input_' . strval($field->id);
+	        }
+	        
+	        // Check Subfields
+	        if ( isset($field->inputs) )  {
+	            foreach($field->inputs as $sub_field) {
+	                if ( strtolower($sub_field['label']) === strtolower($label) || strtolower($sub_field['customLabel']) === strtolower($label)) {
+	                    return 'input_' . str_replace('.', '_', strval($sub_field['id']));
+	                }
+	            }
+	        }
+	    }
+	    
+	    return null;
 	}
 
 	/**
@@ -113,7 +189,7 @@ class Wp_Persist_Request_Parameters_Public {
 
 	private function localize_script() {
 		$value_arr = array(
-			'valuesToPersist' => $this->get_request_parameters_array()
+			'valuesToPersist' => $this->parameters_to_persist
 			);
 
 		wp_localize_script( $this->plugin_name, 'prpValues', $value_arr );
