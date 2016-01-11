@@ -124,6 +124,7 @@ class Wp_Persist_Request_Parameters_Public {
 		wp_register_script( 'js-cookie', plugin_dir_url( __FILE__ ) . '/../../bower_components/js-cookie/src/js.cookie.js', array(), $this->version, false );
 		
 		$this->localize_script();
+		
 		wp_enqueue_script( $this->plugin_name );
 	}
 
@@ -147,7 +148,8 @@ class Wp_Persist_Request_Parameters_Public {
 	 * @since    1.0.0
 	 */
 	private function save_to_hidden_field( $param, $form ) {
-		$input_id = $this->get_input_id_from_label( $param, $form);
+		$input_id = $this->get_hidden_input_id_from_label( $param, $form);
+
 		if(isset($_COOKIE[$param]) && isset($input_id)) {
 			$_POST[$input_id] = $_COOKIE[$param];	
 		}
@@ -158,12 +160,12 @@ class Wp_Persist_Request_Parameters_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	private function get_input_id_from_label( $label, $form )
+	private function get_hidden_input_id_from_label( $label, $form )
 	{
 	    foreach( $form['fields'] as $field)
 	    {
-	    	var_dump($field); exit();
-	    	
+	    	if( $field->type != 'hidden' ) continue;
+
 	        if ( strtolower($field->label) === strtolower($label) ) {
 	            return 'input_' . strval($field->id);
 	        }
