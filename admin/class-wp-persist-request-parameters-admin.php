@@ -196,7 +196,7 @@ class Wp_Persist_Request_Parameters_Admin {
 		$value = get_option($f_id);
 	?>
 		<input type="text" name="<?php echo $f_id; ?>" id="<?php echo $f_id; ?>"  value="<?php echo $value; ?>"/>
-		<em class="description">A comma-seperated list of URL parameters to track with cookies.</em>
+		<em class="description">A comma-seperated list of URL parameters to persist across a user's session using cookies.</em>
 	<?php
 	}
 
