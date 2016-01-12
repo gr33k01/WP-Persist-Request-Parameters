@@ -74,7 +74,8 @@ class Wp_Persist_Request_Parameters_Public {
 
 		$this->parameters_to_persist = $this->get_request_parameters_array();
 
-		$this->save_to_gravity_forms = true;
+		$this->save_to_gravity_forms = get_option('wp_prp_save_to_gf_hidden_fields');
+
 	}
 
 	/**
@@ -124,18 +125,20 @@ class Wp_Persist_Request_Parameters_Public {
 		wp_register_script( 'js-cookie', plugin_dir_url( __FILE__ ) . '/../../bower_components/js-cookie/src/js.cookie.js', array(), $this->version, false );
 		
 		$this->localize_script();
-		
+
 		wp_enqueue_script( $this->plugin_name );
 	}
 
 	/**
-	 * Pre submission Gravity Froms hook
+	 * Function for pre submission Gravity Forms hook
 	 *
 	 * @since    1.0.0
 	 */
 	public function pre_submission( $form ) {
 
-		if ( ! $this->save_to_gravity_forms ) return;
+		if ( ! $this->save_to_gravity_forms ) {
+			return;
+		}
 
 		foreach( $this->parameters_to_persist as $param ) {
 			$this->save_to_hidden_field( $param, $form );
@@ -150,7 +153,7 @@ class Wp_Persist_Request_Parameters_Public {
 	private function save_to_hidden_field( $param, $form ) {
 		$input_id = $this->get_hidden_input_id_from_label( $param, $form);
 
-		if(isset($_COOKIE[$param]) && isset($input_id)) {
+		if( isset( $_COOKIE[$param] ) && isset( $input_id ) ) {
 			$_POST[$input_id] = $_COOKIE[$param];	
 		}
 	}

@@ -117,7 +117,7 @@ class Wp_Persist_Request_Parameters_Admin {
 	public function display_admin_page() {
 		add_menu_page(
 			'Persist Request Parameters',
-			'PRP',
+			'Persist Request Parameters',
 			'manage_options',
 			'wp_persist_request_parameters_admin',
 			array( $this, 'show_page' ),
@@ -174,7 +174,7 @@ class Wp_Persist_Request_Parameters_Admin {
 			);
 
 		// Registers the 'Parameters to track' field
-		register_setting( $this->plugin_name, $this->option_prefix . '_save_to_gf_hidden_fields', array( $this, $this->option_prefix . '_save_to_gf_hidden_fields' ) );
+		register_setting( $this->plugin_name, $this->option_prefix . '_save_to_gf_hidden_fields', array( $this, $this->option_prefix . '_sanitize_save_to_gf_hidden_fields' ) );
 	}
 
 	/**
@@ -216,10 +216,9 @@ class Wp_Persist_Request_Parameters_Admin {
 	 */
 	public function wp_prp_save_to_gf_hidden_fields_cb() {
 		$f_id = $this->option_prefix . '_save_to_gf_hidden_fields';
-		$values = get_option($f_id);
-		// var_dump($value); exit();
+		$option = get_option($f_id);
 	?>
-		<input type="checkbox" name="<?php echo $f_id; ?>[save_to_gf]" id="save_to_gf"  value="1" <?php echo checked(1, $values, false) ?> />
+		<input type="checkbox" name="<?php echo $f_id; ?>" id="<?php echo $f_id; ?>"  value="1" <?php checked(1, $option); ?> />
 		<em class="description">When this option is enabled, a Gravity Forms hook will attempt save each the above parameters to a hidden field with a matching label. <strong>Note: this will only work with hidden fields.</strong></em>
 	<?php
 	}
