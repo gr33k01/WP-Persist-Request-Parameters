@@ -207,7 +207,7 @@ class Wp_Persist_Request_Parameters_Public {
 	 * @since    1.0.0
 	 */
 	private function get_request_parameters_array() {
-		$params = split( ',', get_option( 'wp_prp_parameters_to_track' ) );
+		$params = explode( ',', get_option( 'wp_prp_parameters_to_track' ) );
 
 		for( $i = 0; $i < count( $params ); $i++ ) {
 			$params[$i] = strtolower(trim($params[$i]));
